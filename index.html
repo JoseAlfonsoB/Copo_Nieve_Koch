@@ -1,697 +1,780 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Copo de Nieve de Koch</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
-            color: white;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(
+          135deg,
+          #0c0c0c 0%,
+          #1a1a2e 50%,
+          #16213e 100%
+        );
+        color: white;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 30px 0;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 30px 0;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
 
+      .header h1 {
+        font-size: 2.5rem;
+        font-weight: 300;
+        margin-bottom: 10px;
+        background: linear-gradient(45deg, #00d4ff, #ff00ff, #00ff88);
+        background-size: 200% 200%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientShift 3s ease-in-out infinite alternate;
+      }
+
+      @keyframes gradientShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        100% {
+          background-position: 100% 50%;
+        }
+      }
+
+      .subtitle {
+        font-size: 1.1rem;
+        opacity: 0.8;
+        font-weight: 300;
+      }
+
+      .options-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+      }
+
+      .option-card {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 15px;
+        padding: 30px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .option-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      .option-card:hover::before {
+        left: 100%;
+      }
+
+      .option-card:hover {
+        transform: translateY(-10px);
+        border-color: #00d4ff;
+        box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+      }
+
+      .option-card h3 {
+        font-size: 1.4rem;
+        margin-bottom: 15px;
+        color: #00d4ff;
+      }
+
+      .option-card p {
+        font-size: 1rem;
+        opacity: 0.8;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        background: linear-gradient(45deg, #00d4ff, #0099cc);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
+      }
+
+      .canvas-container {
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 15px;
+        padding: 20px;
+        margin: 30px 0;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+      }
+
+      #canvas {
+        border-radius: 10px;
+        max-width: 100%;
+        height: auto;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin: 20px 0;
+      }
+
+      .control-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      label {
+        font-weight: 500;
+        color: #00d4ff;
+      }
+
+      input[type="range"] {
+        width: 150px;
+        height: 5px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.1);
+        outline: none;
+        -webkit-appearance: none;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: #00d4ff;
+        cursor: pointer;
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: #00d4ff;
+        cursor: pointer;
+        border: none;
+      }
+
+      select {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        padding: 8px 15px;
+        font-size: 1rem;
+      }
+
+      .info-panel {
+        background: rgba(0, 212, 255, 0.1);
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+        text-align: center;
+      }
+
+      .status {
+        margin: 10px 0;
+        font-size: 1.1rem;
+        font-weight: 500;
+      }
+
+      .animation-controls {
+        display: none;
+        justify-content: center;
+        gap: 15px;
+        margin: 20px 0;
+      }
+
+      .animation-controls.show {
+        display: flex;
+      }
+
+      .comparison-container {
+        display: none;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin: 20px 0;
+      }
+
+      .comparison-container.show {
+        display: grid;
+      }
+
+      .comparison-item {
+        text-align: center;
+      }
+
+      .comparison-item h4 {
+        color: #00d4ff;
+        margin-bottom: 10px;
+      }
+
+      @media (max-width: 768px) {
         .header h1 {
-            font-size: 2.5rem;
-            font-weight: 300;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #00d4ff, #ff00ff, #00ff88);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradientShift 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
-        }
-
-        .subtitle {
-            font-size: 1.1rem;
-            opacity: 0.8;
-            font-weight: 300;
+          font-size: 2rem;
         }
 
         .options-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        .option-card {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .option-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s;
-        }
-
-        .option-card:hover::before {
-            left: 100%;
-        }
-
-        .option-card:hover {
-            transform: translateY(-10px);
-            border-color: #00d4ff;
-            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
-        }
-
-        .option-card h3 {
-            font-size: 1.4rem;
-            margin-bottom: 15px;
-            color: #00d4ff;
-        }
-
-        .option-card p {
-            font-size: 1rem;
-            opacity: 0.8;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            background: linear-gradient(45deg, #00d4ff, #0099cc);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.3);
-        }
-
-        .canvas-container {
-            background: rgba(0, 0, 0, 0.8);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 30px 0;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        #canvas {
-            border-radius: 10px;
-            max-width: 100%;
-            height: auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+          grid-template-columns: 1fr;
+          gap: 20px;
         }
 
         .controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin: 20px 0;
-        }
-
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        label {
-            font-weight: 500;
-            color: #00d4ff;
-        }
-
-        input[type="range"] {
-            width: 150px;
-            height: 5px;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.1);
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: #00d4ff;
-            cursor: pointer;
-        }
-
-        input[type="range"]::-moz-range-thumb {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: #00d4ff;
-            cursor: pointer;
-            border: none;
-        }
-
-        select {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 8px 15px;
-            font-size: 1rem;
-        }
-
-        .info-panel {
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .status {
-            margin: 10px 0;
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-
-        .animation-controls {
-            display: none;
-            justify-content: center;
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .animation-controls.show {
-            display: flex;
+          flex-direction: column;
         }
 
         .comparison-container {
-            display: none;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin: 20px 0;
+          grid-template-columns: 1fr;
         }
+      }
 
-        .comparison-container.show {
-            display: grid;
-        }
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #00d4ff;
+        animation: spin 1s ease-in-out infinite;
+        margin-left: 10px;
+      }
 
-        .comparison-item {
-            text-align: center;
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
-
-        .comparison-item h4 {
-            color: #00d4ff;
-            margin-bottom: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .options-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .controls {
-                flex-direction: column;
-            }
-            
-            .comparison-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #00d4ff;
-            animation: spin 1s ease-in-out infinite;
-            margin-left: 10px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="header">
-            <h1>Copo de Nieve de Koch</h1>
-            <p class="subtitle">José Alfonso Bautista Arteaga <br> ISIC-3701</p>
+      <div class="header">
+        <h1>Copo de Nieve de Koch</h1>
+        <p class="subtitle">
+          José Alfonso Bautista Arteaga <br />
+          ISIC-3701
+        </p>
+      </div>
+
+      <div class="options-grid">
+        <div class="option-card" onclick="demoExacta()">
+          <h3>1. Mitad de copo de nieve</h3>
+          <p>Visualiza la forma exacta con niveles progresivos de recursión</p>
+          <button class="btn">Iniciar Demo</button>
         </div>
 
-        <div class="options-grid">
-            <div class="option-card" onclick="demoExacta()">
-                <h3>1. Mitad de copo de nieve</h3>
-                <p>Visualiza la forma exacta con niveles progresivos de recursión</p>
-                <button class="btn">Iniciar Demo</button>
-            </div>
-
-            <div class="option-card" onclick="modoInteractivo()">
-                <h3>2. Modo Interactivo</h3>
-                <p>Controla el nivel de recursión, colores y parámetros en tiempo real</p>
-                <button class="btn">Modo Interactivo</button>
-            </div>
-
-            <div class="option-card" onclick="mostrarComparacion()">
-                <h3>3. Comparación Visual</h3>
-                <p>Compara lado a lado el copo completo vs la mitad del copo</p>
-                <button class="btn">Ver Comparación</button>
-            </div>
+        <div class="option-card" onclick="modoInteractivo()">
+          <h3>2. Modo Interactivo</h3>
+          <p>
+            Controla el nivel de recursión, colores y parámetros en tiempo real
+          </p>
+          <button class="btn">Modo Interactivo</button>
         </div>
 
-        <div class="canvas-container">
-            <canvas id="canvas" width="800" height="600"></canvas>
-            <div class="status" id="status">Selecciona una opción para comenzar</div>
+        <div class="option-card" onclick="mostrarComparacion()">
+          <h3>3. Comparación Visual</h3>
+          <p>Compara lado a lado el copo completo vs la mitad del copo</p>
+          <button class="btn">Ver Comparación</button>
         </div>
+      </div>
 
-        <div class="controls" id="controls" style="display: none;">
-            <div class="control-group">
-                <label for="nivel">Nivel:</label>
-                <input type="range" id="nivel" min="0" max="6" value="3" onchange="actualizarDibujo()">
-                <span id="nivelValue">3</span>
-            </div>
-            <div class="control-group">
-                <label for="color">Color:</label>
-                <select id="color" onchange="actualizarDibujo()">
-                    <option value="cyan">Cyan</option>
-                    <option value="orange">Naranja</option>
-                    <option value="lime">Verde Lima</option>
-                    <option value="magenta">Magenta</option>
-                    <option value="yellow">Amarillo</option>
-                    <option value="red">Rojo</option>
-                    <option value="white">Blanco</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <label for="tamaño">Tamaño:</label>
-                <input type="range" id="tamaño" min="100" max="400" value="250" onchange="actualizarDibujo()">
-                <span id="tamañoValue">250</span>
-            </div>
+      <div class="canvas-container">
+        <canvas id="canvas" width="800" height="600"></canvas>
+        <div class="status" id="status">
+          Selecciona una opción para comenzar
         </div>
+      </div>
 
-        <div class="animation-controls" id="animationControls">
-            <button class="btn" onclick="pausarReanudarAnimacion()">Pausar</button>
-            <button class="btn" onclick="reiniciarAnimacion()">Reiniciar</button>
-            <button class="btn" onclick="siguienteNivel()">Siguiente Nivel</button>
+      <div class="controls" id="controls" style="display: none">
+        <div class="control-group">
+          <label for="nivel">Nivel:</label>
+          <input
+            type="range"
+            id="nivel"
+            min="0"
+            max="6"
+            value="3"
+            onchange="actualizarDibujo()"
+          />
+          <span id="nivelValue">3</span>
         </div>
+        <div class="control-group">
+          <label for="color">Color:</label>
+          <select id="color" onchange="actualizarDibujo()">
+            <option value="cyan">Cyan</option>
+            <option value="orange">Naranja</option>
+            <option value="lime">Verde Lima</option>
+            <option value="magenta">Magenta</option>
+            <option value="yellow">Amarillo</option>
+            <option value="red">Rojo</option>
+            <option value="white">Blanco</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="tamaño">Tamaño:</label>
+          <input
+            type="range"
+            id="tamaño"
+            min="100"
+            max="400"
+            value="250"
+            onchange="actualizarDibujo()"
+          />
+          <span id="tamañoValue">250</span>
+        </div>
+      </div>
 
-        <div class="comparison-container" id="comparisonContainer">
-            <div class="comparison-item">
-                <h4>Copo Completo</h4>
-                <canvas id="canvasCompleto" width="400" height="400"></canvas>
-            </div>
-            <div class="comparison-item">
-                <h4>Forma Exacta</h4>
-                <canvas id="canvasExacto" width="400" height="400"></canvas>
-            </div>
-        </div>
+      <div class="animation-controls" id="animationControls">
+        <button class="btn" onclick="pausarReanudarAnimacion()">Pausar</button>
+        <button class="btn" onclick="reiniciarAnimacion()">Reiniciar</button>
+        <button class="btn" onclick="siguienteNivel()">Siguiente Nivel</button>
+        <button
+          class="btn"
+          id="cancelarBtn"
+          onclick="cancelarAnimacion()"
+          style="background: linear-gradient(45deg, #ff0055, #ff6600)"
+        >
+          Cancelar
+        </button>
+      </div>
 
-        <div class="info-panel">
-            <h3>Información sobre el Fractal de Koch</h3>
-            <p>El copo de nieve de Koch es un fractal matemático que se construye recursivamente. 
-               Esta implementación muestra una forma específica: una curva completa más dos segmentos 
-               parciales que crean una forma única y elegante.</p>
+      <div class="comparison-container" id="comparisonContainer">
+        <div class="comparison-item">
+          <h4>Copo Completo</h4>
+          <canvas id="canvasCompleto" width="400" height="400"></canvas>
         </div>
+        <div class="comparison-item">
+          <h4>Forma Exacta</h4>
+          <canvas id="canvasExacto" width="400" height="400"></canvas>
+        </div>
+      </div>
+
+      <div class="info-panel">
+        <h3>Información sobre el Fractal de Koch</h3>
+        <p>
+          El copo de nieve de Koch es un fractal matemático que se construye
+          recursivamente. Esta implementación muestra una forma específica: una
+          curva completa más dos segmentos parciales que crean una forma única y
+          elegante.
+        </p>
+      </div>
     </div>
 
     <script>
-        let canvas, ctx;
-        let animacionActiva = false;
-        let nivelActual = 0;
-        let maxNivel = 4;
-        let animacionPausada = false;
-        let modoActual = '';
+      let canvas, ctx;
+      let animacionActiva = false;
+      let nivelActual = 0;
+      let maxNivel = 4;
+      let animacionPausada = false;
+      let modoActual = "";
 
-        // Inicializar canvas
-        function inicializarCanvas() {
-            canvas = document.getElementById('canvas');
-            ctx = canvas.getContext('2d');
-            limpiarCanvas();
+      // Inicializar canvas
+      function inicializarCanvas() {
+        canvas = document.getElementById("canvas");
+        ctx = canvas.getContext("2d");
+        limpiarCanvas();
+      }
+
+      function limpiarCanvas() {
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      // Clase para simular turtle graphics
+      class Turtle {
+        constructor(ctx, x, y) {
+          this.ctx = ctx;
+          this.x = x;
+          this.y = y;
+          this.angle = 0;
+          this.penDown = true;
+          this.color = "cyan";
+          this.lineWidth = 2;
         }
 
-        function limpiarCanvas() {
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        forward(distance) {
+          const newX = this.x + distance * Math.cos(this.angle);
+          const newY = this.y + distance * Math.sin(this.angle);
+
+          if (this.penDown) {
+            this.ctx.strokeStyle = this.color;
+            this.ctx.lineWidth = this.lineWidth;
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.x, this.y);
+            this.ctx.lineTo(newX, newY);
+            this.ctx.stroke();
+          }
+
+          this.x = newX;
+          this.y = newY;
         }
 
-        // Clase para simular turtle graphics
-        class Turtle {
-            constructor(ctx, x, y) {
-                this.ctx = ctx;
-                this.x = x;
-                this.y = y;
-                this.angle = 0;
-                this.penDown = true;
-                this.color = 'cyan';
-                this.lineWidth = 2;
-            }
-
-            forward(distance) {
-                const newX = this.x + distance * Math.cos(this.angle);
-                const newY = this.y + distance * Math.sin(this.angle);
-                
-                if (this.penDown) {
-                    this.ctx.strokeStyle = this.color;
-                    this.ctx.lineWidth = this.lineWidth;
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(this.x, this.y);
-                    this.ctx.lineTo(newX, newY);
-                    this.ctx.stroke();
-                }
-                
-                this.x = newX;
-                this.y = newY;
-            }
-
-            left(degrees) {
-                this.angle -= degrees * Math.PI / 180;
-            }
-
-            right(degrees) {
-                this.angle += degrees * Math.PI / 180;
-            }
-
-            penup() {
-                this.penDown = false;
-            }
-
-            pendown() {
-                this.penDown = true;
-            }
-
-            goto(x, y) {
-                this.x = x;
-                this.y = y;
-            }
-
-            setheading(degrees) {
-                this.angle = degrees * Math.PI / 180;
-            }
+        left(degrees) {
+          this.angle -= (degrees * Math.PI) / 180;
         }
 
-        // Funciones de dibujo de Koch
-        function curvaKoch(turtle, longitud, nivel) {
-            if (nivel === 0) {
-                turtle.forward(longitud);
-            } else {
-                const longitudNueva = longitud / 3;
-                
-                curvaKoch(turtle, longitudNueva, nivel - 1);
-                turtle.left(60);
-                curvaKoch(turtle, longitudNueva, nivel - 1);
-                turtle.right(120);
-                curvaKoch(turtle, longitudNueva, nivel - 1);
-                turtle.left(60);
-                curvaKoch(turtle, longitudNueva, nivel - 1);
-            }
+        right(degrees) {
+          this.angle += (degrees * Math.PI) / 180;
         }
 
-        function copoNieveKoch(turtle, longitud, nivel) {
-            for (let i = 0; i < 3; i++) {
-                curvaKoch(turtle, longitud, nivel);
-                turtle.right(120);
-            }
+        penup() {
+          this.penDown = false;
         }
 
-        function dibujarPrimerCuartoCurvaKoch(turtle, longitud, nivel) {
-            if (nivel === 0) {
-                turtle.forward(longitud / 4);
-            } else {
-                const longitudNueva = longitud / 3;
-                curvaKoch(turtle, longitudNueva, nivel - 1);
-            }
+        pendown() {
+          this.penDown = true;
         }
 
-        function dibujarUltimoCuartoCurvaKoch(turtle, longitud, nivel) {
-            if (nivel === 0) {
-                turtle.forward(longitud / 4);
-            } else {
-                const longitudNueva = longitud / 3;
-                curvaKoch(turtle, longitudNueva, nivel - 1);
-            }
+        goto(x, y) {
+          this.x = x;
+          this.y = y;
         }
 
-        function simularCurvaKoch(turtle, longitud, nivel) {
-            if (nivel === 0) {
-                turtle.forward(longitud);
-            } else {
-                const longitudNueva = longitud / 3;
-                
-                simularCurvaKoch(turtle, longitudNueva, nivel - 1);
-                turtle.left(60);
-                simularCurvaKoch(turtle, longitudNueva, nivel - 1);
-                turtle.right(120);
-                simularCurvaKoch(turtle, longitudNueva, nivel - 1);
-                turtle.left(60);
-                simularCurvaKoch(turtle, longitudNueva, nivel - 1);
-            }
+        setheading(degrees) {
+          this.angle = (degrees * Math.PI) / 180;
+        }
+      }
+
+      // Funciones de dibujo de Koch
+      function curvaKoch(turtle, longitud, nivel) {
+        if (nivel === 0) {
+          turtle.forward(longitud);
+        } else {
+          const longitudNueva = longitud / 3;
+
+          curvaKoch(turtle, longitudNueva, nivel - 1);
+          turtle.left(60);
+          curvaKoch(turtle, longitudNueva, nivel - 1);
+          turtle.right(120);
+          curvaKoch(turtle, longitudNueva, nivel - 1);
+          turtle.left(60);
+          curvaKoch(turtle, longitudNueva, nivel - 1);
+        }
+      }
+
+      function copoNieveKoch(turtle, longitud, nivel) {
+        for (let i = 0; i < 3; i++) {
+          curvaKoch(turtle, longitud, nivel);
+          turtle.right(120);
+        }
+      }
+
+      function dibujarPrimerCuartoCurvaKoch(turtle, longitud, nivel) {
+        if (nivel === 0) {
+          turtle.forward(longitud / 4);
+        } else {
+          const longitudNueva = longitud / 3;
+          curvaKoch(turtle, longitudNueva, nivel - 1);
+        }
+      }
+
+      function dibujarUltimoCuartoCurvaKoch(turtle, longitud, nivel) {
+        if (nivel === 0) {
+          turtle.forward(longitud / 4);
+        } else {
+          const longitudNueva = longitud / 3;
+          curvaKoch(turtle, longitudNueva, nivel - 1);
+        }
+      }
+
+      function simularCurvaKoch(turtle, longitud, nivel) {
+        if (nivel === 0) {
+          turtle.forward(longitud);
+        } else {
+          const longitudNueva = longitud / 3;
+
+          simularCurvaKoch(turtle, longitudNueva, nivel - 1);
+          turtle.left(60);
+          simularCurvaKoch(turtle, longitudNueva, nivel - 1);
+          turtle.right(120);
+          simularCurvaKoch(turtle, longitudNueva, nivel - 1);
+          turtle.left(60);
+          simularCurvaKoch(turtle, longitudNueva, nivel - 1);
+        }
+      }
+
+      function simularTresCuartosRestantesSegundaCurva(
+        turtle,
+        longitud,
+        nivel
+      ) {
+        turtle.penup();
+
+        if (nivel === 0) {
+          turtle.forward((3 * longitud) / 4);
+        } else {
+          const longitudNueva = longitud / 3;
+
+          turtle.left(60);
+          simularCurvaKoch(turtle, longitudNueva, nivel - 1);
+          turtle.right(120);
+          simularCurvaKoch(turtle, longitudNueva, nivel - 1);
+          turtle.left(60);
+          simularCurvaKoch(turtle, longitudNueva, nivel - 1);
         }
 
-        function simularTresCuartosRestantesSegundaCurva(turtle, longitud, nivel) {
-            turtle.penup();
-            
-            if (nivel === 0) {
-                turtle.forward(3 * longitud / 4);
-            } else {
-                const longitudNueva = longitud / 3;
-                
-                turtle.left(60);
-                simularCurvaKoch(turtle, longitudNueva, nivel - 1);
-                turtle.right(120);
-                simularCurvaKoch(turtle, longitudNueva, nivel - 1);
-                turtle.left(60);
-                simularCurvaKoch(turtle, longitudNueva, nivel - 1);
-            }
-            
-            turtle.pendown();
+        turtle.pendown();
+      }
+
+      function simularTresCuartosCurvaKoch(turtle, longitud, nivel) {
+        turtle.penup();
+
+        if (nivel === 0) {
+          turtle.forward((3 * longitud) / 4);
+        } else {
+          const longitudNueva = longitud / 3;
+
+          simularCurvaKoch(turtle, longitudNueva, nivel - 1);
+          turtle.left(60);
+          simularCurvaKoch(turtle, longitudNueva, nivel - 1);
+          turtle.right(120);
+          simularCurvaKoch(turtle, longitudNueva, nivel - 1);
+          turtle.left(60);
         }
 
-        function simularTresCuartosCurvaKoch(turtle, longitud, nivel) {
-            turtle.penup();
-            
-            if (nivel === 0) {
-                turtle.forward(3 * longitud / 4);
-            } else {
-                const longitudNueva = longitud / 3;
-                
-                simularCurvaKoch(turtle, longitudNueva, nivel - 1);
-                turtle.left(60);
-                simularCurvaKoch(turtle, longitudNueva, nivel - 1);
-                turtle.right(120);
-                simularCurvaKoch(turtle, longitudNueva, nivel - 1);
-                turtle.left(60);
-            }
-            
-            turtle.pendown();
-        }
+        turtle.pendown();
+      }
 
-        function posicionarseParaUltimoCuartoTerceraCurva(turtle, longitud, nivel) {
-            simularTresCuartosRestantesSegundaCurva(turtle, longitud, nivel);
-            turtle.right(120);
-            simularTresCuartosCurvaKoch(turtle, longitud, nivel);
-        }
+      function posicionarseParaUltimoCuartoTerceraCurva(
+        turtle,
+        longitud,
+        nivel
+      ) {
+        simularTresCuartosRestantesSegundaCurva(turtle, longitud, nivel);
+        turtle.right(120);
+        simularTresCuartosCurvaKoch(turtle, longitud, nivel);
+      }
 
-        function formaImagenKochExacta(turtle, longitud, nivel, color = 'cyan') {
-            turtle.color = color;
-            
-            // 1. Primera curva completa
-            curvaKoch(turtle, longitud, nivel);
-            
-            // 2. Girar y dibujar primer cuarto de segunda curva
-            turtle.right(120);
-            dibujarPrimerCuartoCurvaKoch(turtle, longitud, nivel);
-            
-            // 3. Posicionarse y dibujar último cuarto de tercera curva
-            posicionarseParaUltimoCuartoTerceraCurva(turtle, longitud, nivel);
-            dibujarUltimoCuartoCurvaKoch(turtle, longitud, nivel);
-        }
+      function formaImagenKochExacta(turtle, longitud, nivel, color = "cyan") {
+        turtle.color = color;
 
-        // Funciones principales
-        function demoExacta() {
-            modoActual = 'demo';
-            document.getElementById('controls').style.display = 'none';
-            document.getElementById('animationControls').classList.add('show');
-            document.getElementById('comparisonContainer').classList.remove('show');
-            
+        // 1. Primera curva completa
+        curvaKoch(turtle, longitud, nivel);
+
+        // 2. Girar y dibujar primer cuarto de segunda curva
+        turtle.right(120);
+        dibujarPrimerCuartoCurvaKoch(turtle, longitud, nivel);
+
+        // 3. Posicionarse y dibujar último cuarto de tercera curva
+        posicionarseParaUltimoCuartoTerceraCurva(turtle, longitud, nivel);
+        dibujarUltimoCuartoCurvaKoch(turtle, longitud, nivel);
+      }
+
+      // Funciones principales
+      function demoExacta() {
+        modoActual = "demo";
+        document.getElementById("controls").style.display = "none";
+        document.getElementById("animationControls").classList.add("show");
+        document.getElementById("comparisonContainer").classList.remove("show");
+        document.getElementById("cancelarBtn").style.display = "inline-block";
+
+        nivelActual = 0;
+        maxNivel = 4;
+        animacionActiva = true;
+        animacionPausada = false;
+
+        ejecutarDemoAnimado();
+      }
+
+      function ejecutarDemoAnimado() {
+        if (!animacionActiva || animacionPausada) return;
+
+        limpiarCanvas();
+        document.getElementById(
+          "status"
+        ).innerHTML = `Dibujando forma exacta - Nivel ${nivelActual} <div class="loading"></div>`;
+
+        setTimeout(() => {
+          const turtle = new Turtle(ctx, 200, 300);
+          const colores = ["white", "cyan", "lightblue", "#0099ff", "#0066cc"];
+
+          formaImagenKochExacta(turtle, 250, nivelActual, colores[nivelActual]);
+
+          document.getElementById(
+            "status"
+          ).textContent = `Nivel ${nivelActual} completado`;
+
+          nivelActual++;
+          if (nivelActual <= maxNivel && animacionActiva) {
+            setTimeout(ejecutarDemoAnimado, 4000);
+          } else if (nivelActual > maxNivel) {
+            document.getElementById("status").textContent = "¡Demo completado!";
             nivelActual = 0;
-            maxNivel = 4;
-            animacionActiva = true;
-            animacionPausada = false;
-            
+            setTimeout(ejecutarDemoAnimado, 3000);
+          }
+        }, 100);
+      }
+
+      function modoInteractivo() {
+        modoActual = "interactivo";
+        document.getElementById("controls").style.display = "flex";
+        document.getElementById("animationControls").classList.add("show");
+        document.getElementById("comparisonContainer").classList.remove("show");
+        document.getElementById("cancelarBtn").style.display = "inline-block";
+        animacionActiva = false;
+
+        document.getElementById("status").textContent =
+          "Modo interactivo - Ajusta los controles";
+        actualizarDibujo();
+      }
+
+      function mostrarComparacion() {
+        modoActual = "comparacion";
+        document.getElementById("controls").style.display = "none";
+        document.getElementById("animationControls").classList.add("show");
+        document.getElementById("comparisonContainer").classList.add("show");
+        document.getElementById("cancelarBtn").style.display = "inline-block";
+        animacionActiva = false;
+
+        document.getElementById("status").textContent =
+          "Comparación: Copo completo vs Forma exacta";
+        dibujarComparacion();
+      }
+
+      function actualizarDibujo() {
+        if (modoActual !== "interactivo") return;
+
+        const nivel = parseInt(document.getElementById("nivel").value);
+        const color = document.getElementById("color").value;
+        const tamaño = parseInt(document.getElementById("tamaño").value);
+
+        document.getElementById("nivelValue").textContent = nivel;
+        document.getElementById("tamañoValue").textContent = tamaño;
+
+        limpiarCanvas();
+
+        const turtle = new Turtle(
+          ctx,
+          canvas.width / 2 - tamaño / 2,
+          canvas.height / 2
+        );
+        formaImagenKochExacta(turtle, tamaño, nivel, color);
+      }
+
+      function dibujarComparacion() {
+        const canvasCompleto = document.getElementById("canvasCompleto");
+        const canvasExacto = document.getElementById("canvasExacto");
+
+        const ctxCompleto = canvasCompleto.getContext("2d");
+        const ctxExacto = canvasExacto.getContext("2d");
+
+        // Limpiar canvas
+        ctxCompleto.fillStyle = "#000000";
+        ctxCompleto.fillRect(0, 0, canvasCompleto.width, canvasCompleto.height);
+        ctxExacto.fillStyle = "#000000";
+        ctxExacto.fillRect(0, 0, canvasExacto.width, canvasExacto.height);
+
+        // Dibujar copo completo
+        const turtleCompleto = new Turtle(ctxCompleto, 200, 250);
+        copoNieveKoch(turtleCompleto, 150, 3);
+
+        // Dibujar forma exacta
+        const turtleExacto = new Turtle(ctxExacto, 150, 250);
+        formaImagenKochExacta(turtleExacto, 150, 3, "cyan");
+      }
+
+      function pausarReanudarAnimacion() {
+        if (modoActual === "demo") {
+          animacionPausada = !animacionPausada;
+          const btn = document.querySelector("#animationControls button");
+          btn.textContent = animacionPausada ? "Reanudar" : "Pausar";
+
+          if (!animacionPausada) {
             ejecutarDemoAnimado();
+          }
         }
+      }
 
-        function ejecutarDemoAnimado() {
-            if (!animacionActiva || animacionPausada) return;
-            
-            limpiarCanvas();
-            document.getElementById('status').innerHTML = `Dibujando forma exacta - Nivel ${nivelActual} <div class="loading"></div>`;
-            
-            setTimeout(() => {
-                const turtle = new Turtle(ctx, 200, 300);
-                const colores = ['white', 'cyan', 'lightblue', '#0099ff', '#0066cc'];
-                
-                formaImagenKochExacta(turtle, 250, nivelActual, colores[nivelActual]);
-                
-                document.getElementById('status').textContent = `Nivel ${nivelActual} completado`;
-                
-                nivelActual++;
-                if (nivelActual <= maxNivel && animacionActiva) {
-                    setTimeout(ejecutarDemoAnimado, 4000);
-                } else if (nivelActual > maxNivel) {
-                    document.getElementById('status').textContent = '¡Demo completado!';
-                    nivelActual = 0;
-                    setTimeout(ejecutarDemoAnimado, 3000);
-                }
-            }, 100);
+      function reiniciarAnimacion() {
+        if (modoActual === "demo") {
+          nivelActual = 0;
+          animacionPausada = false;
+          document.querySelector("#animationControls button").textContent =
+            "Pausar";
+          ejecutarDemoAnimado();
         }
+      }
 
-        function modoInteractivo() {
-            modoActual = 'interactivo';
-            document.getElementById('controls').style.display = 'flex';
-            document.getElementById('animationControls').classList.remove('show');
-            document.getElementById('comparisonContainer').classList.remove('show');
-            animacionActiva = false;
-            
-            document.getElementById('status').textContent = 'Modo interactivo - Ajusta los controles';
-            actualizarDibujo();
+      function siguienteNivel() {
+        if (modoActual === "demo") {
+          if (nivelActual <= maxNivel) {
+            ejecutarDemoAnimado();
+          }
         }
+      }
 
-        function mostrarComparacion() {
-            modoActual = 'comparacion';
-            document.getElementById('controls').style.display = 'none';
-            document.getElementById('animationControls').classList.remove('show');
-            document.getElementById('comparisonContainer').classList.add('show');
-            animacionActiva = false;
-            
-            document.getElementById('status').textContent = 'Comparación: Copo completo vs Forma exacta';
-            dibujarComparacion();
-        }
+      function cancelarAnimacion() {
+        animacionActiva = false;
+        animacionPausada = false;
+        nivelActual = 0;
+        limpiarCanvas();
+        document.getElementById("status").textContent = "Animación cancelada";
 
-        function actualizarDibujo() {
-            if (modoActual !== 'interactivo') return;
-            
-            const nivel = parseInt(document.getElementById('nivel').value);
-            const color = document.getElementById('color').value;
-            const tamaño = parseInt(document.getElementById('tamaño').value);
-            
-            document.getElementById('nivelValue').textContent = nivel;
-            document.getElementById('tamañoValue').textContent = tamaño;
-            
-            limpiarCanvas();
-            
-            const turtle = new Turtle(ctx, canvas.width / 2 - tamaño / 2, canvas.height / 2);
-            formaImagenKochExacta(turtle, tamaño, nivel, color);
-        }
+        // Oculta controles y comparación según el modo
+        document.getElementById("controls").style.display = "none";
+        document.getElementById("animationControls").classList.remove("show");
+        document.getElementById("comparisonContainer").classList.remove("show");
+      }
 
-        function dibujarComparacion() {
-            const canvasCompleto = document.getElementById('canvasCompleto');
-            const canvasExacto = document.getElementById('canvasExacto');
-            
-            const ctxCompleto = canvasCompleto.getContext('2d');
-            const ctxExacto = canvasExacto.getContext('2d');
-            
-            // Limpiar canvas
-            ctxCompleto.fillStyle = '#000000';
-            ctxCompleto.fillRect(0, 0, canvasCompleto.width, canvasCompleto.height);
-            ctxExacto.fillStyle = '#000000';
-            ctxExacto.fillRect(0, 0, canvasExacto.width, canvasExacto.height);
-            
-            // Dibujar copo completo
-            const turtleCompleto = new Turtle(ctxCompleto, 200, 250);
-            copoNieveKoch(turtleCompleto, 150, 3);
-            
-            // Dibujar forma exacta
-            const turtleExacto = new Turtle(ctxExacto, 150, 250);
-            formaImagenKochExacta(turtleExacto, 150, 3, 'cyan');
-        }
-
-        function pausarReanudarAnimacion() {
-            if (modoActual === 'demo') {
-                animacionPausada = !animacionPausada;
-                const btn = document.querySelector('#animationControls button');
-                btn.textContent = animacionPausada ? 'Reanudar' : 'Pausar';
-                
-                if (!animacionPausada) {
-                    ejecutarDemoAnimado();
-                }
-            }
-        }
-
-        function reiniciarAnimacion() {
-            if (modoActual === 'demo') {
-                nivelActual = 0;
-                animacionPausada = false;
-                document.querySelector('#animationControls button').textContent = 'Pausar';
-                ejecutarDemoAnimado();
-            }
-        }
-
-        function siguienteNivel() {
-            if (modoActual === 'demo') {
-                if (nivelActual <= maxNivel) {
-                    ejecutarDemoAnimado();
-                }
-            }
-        }
-
-        // Inicializar aplicación
-        window.onload = function() {
-            inicializarCanvas();
-        };
+      // Inicializar aplicación
+      window.onload = function () {
+        inicializarCanvas();
+      };
     </script>
-</body>
+  </body>
 </html>
