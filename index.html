@@ -318,7 +318,7 @@
       <div class="options-grid">
         <div class="option-card" onclick="demoExacta()">
           <h3>1. Mitad de copo de nieve</h3>
-          <p>Visualiza la forma exacta con niveles progresivos de recursión</p>
+          <p>Visualiza la mitad del copo con niveles progresivos de recursión</p>
           <button class="btn">Iniciar Demo</button>
         </div>
 
@@ -403,7 +403,7 @@
           <canvas id="canvasCompleto" width="400" height="400"></canvas>
         </div>
         <div class="comparison-item">
-          <h4>Forma Exacta</h4>
+          <h4>Mitad Del Copo</h4>
           <canvas id="canvasExacto" width="400" height="400"></canvas>
         </div>
       </div>
@@ -643,7 +643,7 @@
         limpiarCanvas();
         document.getElementById(
           "status"
-        ).innerHTML = `Dibujando forma exacta - Nivel ${nivelActual} <div class="loading"></div>`;
+        ).innerHTML = `Dibujando mitad del copo - Nivel ${nivelActual} <div class="loading"></div>`;
 
         setTimeout(() => {
           const turtle = new Turtle(ctx, 200, 300);
@@ -692,7 +692,7 @@
         animacionActiva = false;
 
         document.getElementById("status").textContent =
-          "Comparación: Copo completo vs Forma exacta";
+          "Comparación: Copo completo vs mitad del copo";
         dibujarComparacion();
       }
 
@@ -733,7 +733,7 @@
         const turtleCompleto = new Turtle(ctxCompleto, 200, 250);
         copoNieveKoch(turtleCompleto, 150, 3);
 
-        // Dibujar forma exacta
+        // Dibujar mitad del copo
         const turtleExacto = new Turtle(ctxExacto, 150, 250);
         formaImagenKochExacta(turtleExacto, 150, 3, "cyan");
       }
