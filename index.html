@@ -289,13 +289,13 @@
     <div class="container">
         <div class="header">
             <h1>Copo de Nieve de Koch</h1>
-            <p class="subtitle">Forma Exacta Corregida - Aplicación Interactiva</p>
+            <p class="subtitle">José Alfonso Bautista Arteaga <br> ISIC-3701</p>
         </div>
 
         <div class="options-grid">
             <div class="option-card" onclick="demoExacta()">
-                <h3>1. Demo Forma EXACTA</h3>
-                <p>Visualiza la forma exacta con niveles progresivos de recursión<br>(1 completa + 1/4 + 1/4)</p>
+                <h3>1. Mitad de copo de nieve</h3>
+                <p>Visualiza la forma exacta con niveles progresivos de recursión</p>
                 <button class="btn">Iniciar Demo</button>
             </div>
 
@@ -307,7 +307,7 @@
 
             <div class="option-card" onclick="mostrarComparacion()">
                 <h3>3. Comparación Visual</h3>
-                <p>Compara lado a lado el copo completo vs la forma exacta</p>
+                <p>Compara lado a lado el copo completo vs la mitad del copo</p>
                 <button class="btn">Ver Comparación</button>
             </div>
         </div>
@@ -590,7 +590,7 @@
                 
                 nivelActual++;
                 if (nivelActual <= maxNivel && animacionActiva) {
-                    setTimeout(ejecutarDemoAnimado, 2000);
+                    setTimeout(ejecutarDemoAnimado, 4000);
                 } else if (nivelActual > maxNivel) {
                     document.getElementById('status').textContent = '¡Demo completado!';
                     nivelActual = 0;
